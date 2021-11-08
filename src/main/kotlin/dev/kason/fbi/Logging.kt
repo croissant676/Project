@@ -1,3 +1,8 @@
+// Forbidden Island Project: Team Stephanie Wang
+// Code is licensed under the MIT License, which you can view here: https://opensource.org/licenses/MIT
+
+@file:JvmName("LogUtils")
+
 package dev.kason.fbi
 
 import java.io.*
@@ -16,7 +21,7 @@ object Log {
         }
         File(resource.file)
     }
-    private val writer: BufferedWriter? = if(file != null) BufferedWriter(FileWriter(file!!)) else null
+    private val writer: BufferedWriter? = if (file != null) BufferedWriter(FileWriter(file!!)) else null
     private fun generateHandler(): Handler {
         LogManager.getLogManager().reset()
         val handler = object : Handler() {
@@ -38,6 +43,7 @@ object Log {
                     println(writer)
                 }
             }
+
             override fun flush() = Unit
             override fun close() = Unit
         }
@@ -78,7 +84,8 @@ fun Logger.severe(any: Any?) = severe(any.toString())
 fun Logger.config(any: Any?) = config(any.toString())
 inline fun Logger.log(block: Logger.() -> Unit) = this.block()
 
-val errorPrintStream = PrintStream(object: OutputStream() {
+@JvmField
+val errorPrintStream = PrintStream(object : OutputStream() {
     override fun write(b: ByteArray) = write(b, 0, b.size)
     override fun write(b: ByteArray, off: Int, len: Int) {
         val builder = StringBuilder(len)
@@ -87,5 +94,6 @@ val errorPrintStream = PrintStream(object: OutputStream() {
         }
         println("[${Log.format.format(Date())}][SEVERE](d.k.f.ErrorPrintStream): $builder")
     }
+
     override fun write(b: Int) = Unit
 })
