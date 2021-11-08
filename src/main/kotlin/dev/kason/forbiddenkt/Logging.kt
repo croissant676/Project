@@ -1,9 +1,12 @@
-// Forbidden Island Project: Team Stephanie Wang
-// Code is licensed under the MIT License, which you can view here: https://opensource.org/licenses/MIT
+/*
+ * Forbidden Island Project: Team Stephanie Wang
+ * Code is licensed under the MIT License, which you can view here: https://opensource.org/licenses/MIT
+ */
+
 
 @file:JvmName("LogUtils")
 
-package dev.kason.fbi
+package dev.kason.forbiddenkt
 
 import java.io.*
 import java.text.SimpleDateFormat
@@ -11,6 +14,9 @@ import java.util.*
 import java.util.logging.*
 import java.util.logging.Formatter
 
+/** A basic logging utility class.
+ * Also stores the logged values into the "run.log" file.
+ * @author Kason G. */
 object Log {
     private val handler = generateHandler()
     internal val format = SimpleDateFormat("hh:mm:ss.SSS aa MM/dd/yyyy")
@@ -58,6 +64,10 @@ object Log {
         return handler
     }
 
+    /** Returns the [Logger] for the class that called this method.
+     * The name of this class is gathered through [Thread.getStackTrace], which means that using
+     * another class to call it will result in the incorrect [Logger] being returned. */
+    @JvmStatic
     fun logger(): Logger {
         val element = Thread.currentThread().stackTrace[2]
         val className = element.className
@@ -78,12 +88,32 @@ object Log {
     }
 }
 
+// Utilities functions.
+@JvmSynthetic
+// For Java, just use the `toString()` method.
 fun Logger.info(any: Any?) = info(any.toString())
+@JvmSynthetic
+// For Java, just use the `toString()` method.
 fun Logger.warning(any: Any?) = warning(any.toString())
+@JvmSynthetic
+// For Java, just use the `toString()` method.
 fun Logger.severe(any: Any?) = severe(any.toString())
+@JvmSynthetic
+// For Java, just use the `toString()` method.
 fun Logger.config(any: Any?) = config(any.toString())
 inline fun Logger.log(block: Logger.() -> Unit) = this.block()
 
+
+/** [PrintStream] to print stack trace into when running into an error.
+ * Ideal usage is like this:
+ * ```
+ *  try {
+ *      ...
+ *  } catch(Exception e) {
+ *      logger.warning("Error: " + e.getClass().getCanonicalName() + ", " + e.getMessage());
+ *      e.printStackTrace(LogUtils.errorPrintStream);
+ *  }
+ * ```*/
 @JvmField
 val errorPrintStream = PrintStream(object : OutputStream() {
     override fun write(b: ByteArray) = write(b, 0, b.size)

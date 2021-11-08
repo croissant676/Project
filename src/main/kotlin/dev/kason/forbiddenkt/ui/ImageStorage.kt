@@ -1,31 +1,30 @@
-// Forbidden Island Project: Team Stephanie Wang
-// Code is licensed under the MIT License, which you can view here: https://opensource.org/licenses/MIT
+/*
+ * Forbidden Island Project: Team Stephanie Wang
+ * Code is licensed under the MIT License, which you can view here: https://opensource.org/licenses/MIT
+ */
 
 // File is finished: Do NOT edit anymore.
 
 @file:JvmName("ImageStorageManager")
 
-package dev.kason.fbi.ui
+package dev.kason.forbiddenkt.ui
 
-import dev.kason.fbi.Log
-import dev.kason.fbi.errorPrintStream
+import dev.kason.forbiddenkt.Log
+import dev.kason.forbiddenkt.errorPrintStream
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-/** A custom map that specifically holds [String] and [BufferedImage].
- * The values are retrieved using [ClassLoader.getResource], and values stored.
- * This makes it more optimized compared to retrieving from [ClassLoader] every single
- * time.
- * @author Kason G.*/
+/** A map implementation of an Image Storage.
+ * Values are generated the first time, then stored in a map.
+ * @author Kason G. */
 class ImageStorage internal constructor(private val map: MutableMap<String, BufferedImage> = hashMapOf()) :
     Map<String, BufferedImage> by map {
     private val loader: ClassLoader = javaClass.classLoader
     private val logger = Log.logger()
 
-    /** Returns the [BufferedImage] corresponding to [key], then stores
-     * the result in a map. When getting the same image in the future, the
-     * value in the map will be returned. */
+    /** Returns the [BufferedImage] related to this [key].
+     * `null` if no value can be found. */
     override operator fun get(key: String): BufferedImage? {
         if (map.containsKey(key)) return map[key]!!
         val resource = loader.getResource("\\images\\$key")
@@ -43,8 +42,8 @@ class ImageStorage internal constructor(private val map: MutableMap<String, Buff
         return image
     }
 
-    /** Generates the corresponding [BufferedImage] if possible, then stores the result.
-     * Returns whether it was generated and stored correctly. */
+    /** Generates and stores the [BufferedImage] related to this [string].
+     * Returns whether it was successful. */
     operator fun invoke(string: String): Boolean {
         val file = loader.getResource("\\images\\$string") ?: return false
         kotlin.runCatching {
