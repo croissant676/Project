@@ -16,8 +16,7 @@ import java.util.logging.Logger;
 
 public class JavaTesting {
     public static void main(String[] args) {
-        final ImageStorage images = ImageStorageManager.getImageStorage();
-        images.invoke("Hello World");
-        Logger logger = Log.logger();
+        ImageStorage imageStorage = ImageStorageManager.getImageStorage();
+        BufferedImage image = imageStorage.getImage("dunes_of_deception.png");
     }
 }

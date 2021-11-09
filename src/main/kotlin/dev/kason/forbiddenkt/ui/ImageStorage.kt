@@ -32,6 +32,8 @@ class ImageStorage internal constructor(private val map: MutableMap<String, Buff
         }
         return image
     }
+
+    fun getImage(key: String) = this[key]
     operator fun invoke(string: String): Boolean {
         val file = loader.getResource("\\images\\$string") ?: return false
         kotlin.runCatching {
@@ -44,4 +46,5 @@ class ImageStorage internal constructor(private val map: MutableMap<String, Buff
         return true
     }
 }
+
 val imageStorage = ImageStorage()

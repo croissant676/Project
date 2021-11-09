@@ -14,22 +14,19 @@ import java.util.*
 import java.util.logging.*
 import java.util.logging.Formatter
 
-/** A basic logging utility class.
- * Also stores the logged values into the "run.log" file.
- * @author Kason G. */
 object Log {
     private val handler = generateHandler()
     internal val format = SimpleDateFormat("hh:mm:ss.SSS aa MM/dd/yyyy")
-    private val file: File? by lazy {
-        val resource = javaClass.classLoader.getResource("run.log") ?: return@lazy run {
-            println("\u001B[33m[${format.format(Date())}][WARNING](d.k.f.Log): Could not load resource folder, which may indicate that resources are missing.")
-            null
-        }
-        File(resource.file)
-    }
-    private val writer: BufferedWriter? = if (file != null) BufferedWriter(FileWriter(file!!)) else null
     private fun generateHandler(): Handler {
         LogManager.getLogManager().reset()
+        val formatterObject = object : Formatter() {
+            override fun format(record: LogRecord?): String {
+                if (record == null) return ""
+                return record.run {
+                    "[${format.format(Date.from(instant))}][${level.name.uppercase()}]($loggerName): $message"
+                }
+            }
+        }
         val handler = object : Handler() {
             override fun publish(record: LogRecord?) {
                 if (record == null) return
@@ -44,29 +41,15 @@ object Log {
                     return System.err.println(colorPrefix + string)
                 }
                 println(colorPrefix + string)
-                if (file != null) {
-                    writer!!.write("Hello World")
-                    println(writer)
-                }
             }
 
             override fun flush() = Unit
             override fun close() = Unit
         }
-        handler.formatter = object : Formatter() {
-            override fun format(record: LogRecord?): String {
-                if (record == null) return ""
-                return record.run {
-                    "[${format.format(Date.from(instant))}][${level.name.uppercase()}]($loggerName): $message"
-                }
-            }
-        }
+        handler.formatter = formatterObject
         return handler
     }
 
-    /** Returns the [Logger] for the class that called this method.
-     * The name of this class is gathered through [Thread.getStackTrace], which means that using
-     * another class to call it will result in the incorrect [Logger] being returned. */
     @JvmStatic
     fun logger(): Logger {
         val element = Thread.currentThread().stackTrace[2]
@@ -82,38 +65,25 @@ object Log {
         }
         val logger = Logger.getLogger(builder.toString())
         logger.useParentHandlers = false
-        logger.info("Created logger for $builder")
         logger.addHandler(handler)
+        logger.info("Created logger for $builder")
         return logger
     }
 }
 
-// Utilities functions.
 @JvmSynthetic
-// For Java, just use the `toString()` method.
 fun Logger.info(any: Any?) = info(any.toString())
+
 @JvmSynthetic
-// For Java, just use the `toString()` method.
 fun Logger.warning(any: Any?) = warning(any.toString())
+
 @JvmSynthetic
-// For Java, just use the `toString()` method.
 fun Logger.severe(any: Any?) = severe(any.toString())
+
 @JvmSynthetic
-// For Java, just use the `toString()` method.
 fun Logger.config(any: Any?) = config(any.toString())
 inline fun Logger.log(block: Logger.() -> Unit) = this.block()
 
-
-/** [PrintStream] to print stack trace into when running into an error.
- * Ideal usage is like this:
- * ```
- *  try {
- *      ...
- *  } catch(Exception e) {
- *      logger.warning("Error: " + e.getClass().getCanonicalName() + ", " + e.getMessage());
- *      e.printStackTrace(LogUtils.errorPrintStream);
- *  }
- * ```*/
 @JvmField
 val errorPrintStream = PrintStream(object : OutputStream() {
     override fun write(b: ByteArray) = write(b, 0, b.size)

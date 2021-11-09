@@ -3,12 +3,10 @@
  * Code is licensed under the MIT License, which you can view here: https://opensource.org/licenses/MIT
  */
 
+package io.github.swang04.fbi;
 
-package dev.kason.forbiddenkt.test
+public class Runner {
+    public static void main(String[] args) {
 
-import dev.kason.forbiddenkt.Log
-
-fun main(array: Array<String>) {
-    val log = Log.logger()
-    log.info("Hello World")
+    }
 }
