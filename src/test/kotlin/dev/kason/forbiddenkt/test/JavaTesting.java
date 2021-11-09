@@ -7,6 +7,7 @@
 package dev.kason.forbiddenkt.test;
 
 import dev.kason.forbiddenkt.Log;
+import dev.kason.forbiddenkt.ui.ImageStorage;
 import dev.kason.forbiddenkt.ui.ImageStorageManager;
 
 import java.awt.image.BufferedImage;
@@ -15,7 +16,8 @@ import java.util.logging.Logger;
 
 public class JavaTesting {
     public static void main(String[] args) {
-        final Map<String, BufferedImage> images = ImageStorageManager.getImageStorage();
+        final ImageStorage images = ImageStorageManager.getImageStorage();
+        images.invoke("Hello World");
         Logger logger = Log.logger();
     }
 }
